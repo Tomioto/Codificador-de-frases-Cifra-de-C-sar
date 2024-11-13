@@ -1,0 +1,100 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+typedef struct lista
+{
+	   char info;
+	   struct lista *prox;	
+}ListaC;
+
+ListaC * insereFimLC(ListaC * original, char x){
+    ListaC * novo, * aux;
+    novo = (ListaC *) malloc(sizeof(ListaC));
+    novo->info = x;
+    if(original == NULL){ // LISTA VAZIA
+        novo->prox = novo;
+        original = novo;
+    }
+    else{
+        aux = original;
+        while(aux->prox != original){
+            aux = aux->prox;
+        }
+        novo->prox = original;
+        aux->prox = novo;
+    }
+    return original;
+}
+
+void mostrarLista(ListaC * original){
+	ListaC *aux = original;
+	while(aux->prox != original)
+	{
+		printf("%c", aux->info);
+		aux = aux->prox;
+	}
+}
+
+ListaC * alfabetizar(ListaC * listaOri){
+	for(int i = 65; i <= 90; i++){
+		listaOri = insereFimLC(listaOri, i);
+	}
+	return listaOri;
+}
+
+char codifica(ListaC * alfabeto, char frase, int rotacao) {
+    ListaC * aux = alfabeto;
+    if(alfabeto != NULL) {
+        // Ajusta a rotação para estar no intervalo de 0 a 25
+        rotacao = rotacao % 26;  // Garante que a rotação seja no intervalo de 0 a 25
+
+        // Move até o caractere da frase na lista
+        while(aux->info != frase) {
+            aux = aux->prox;
+        }
+
+        // Aplica a rotação corretamente
+        for(int i = 0; i < abs(rotacao); i++) {
+            // Se a rotação for positiva, movemos para frente
+            // Se a rotação for negativa, movemos para trás
+            aux = (rotacao > 0) ? aux->prox : aux->prox; // mantemos o comportamento circular
+        }
+    }
+
+    return aux->info; // Retorna a letra após a rotação
+}
+
+
+
+int main()
+{
+	ListaC * alfabeto = NULL;
+	char frase[100], fraseCodificada[100];
+	int rotacao;
+	alfabeto = alfabetizar(alfabeto);
+	printf("INSIRA UMA FRASE: ");
+	gets(frase);
+	system("cls");
+	printf("ORIENTACAO: \n(MAXIMO DE 26 OU -26) \n\n(ESQUERDA = NUMERO POSITIVO)\n(DIREITA = NUMERO NEGATIVO)\n");
+	printf("\nINSIRA A QUANTIDADE DE ROTACAO: ");
+	scanf("%d", &rotacao); 
+	for(size_t i = 0; i < strlen(frase); i++){//DEIXA  FRASE MAIUSCULA E ADICIONA A FRASE CRIPTOGRAFADA
+		frase[i] = toupper(frase[i]);
+		if(frase[i] != ' '){
+			fraseCodificada[i] = codifica(alfabeto, frase[i], rotacao);
+		}else{
+			fraseCodificada[i] = ' ';
+		}
+	}
+	fraseCodificada[strlen(frase)] = '\0'; // Adiciona o terminador nulo à string
+	printf("FRASE CODIFICADA: %s \n\n", fraseCodificada);
+	system("pause");
+	return 0;
+}
+
+
+
+
+
